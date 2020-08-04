@@ -11,6 +11,7 @@ import { ActionButton, InputField, PreMeetingScreen, ToggleButton } from '../../
 import { connect } from '../../base/redux';
 import { getDisplayName, updateSettings } from '../../base/settings';
 import { getLocalJitsiVideoTrack } from '../../base/tracks';
+import { isButtonEnabled } from '../../toolbox/functions.web';
 import {
     joinConference as joinConferenceAction,
     joinConferenceWithoutAudio as joinConferenceWithoutAudioAction,
@@ -27,6 +28,8 @@ import {
 
 import JoinByPhoneDialog from './dialogs/JoinByPhoneDialog';
 import DeviceStatus from './preview/DeviceStatus';
+
+declare var interfaceConfig: Object;
 
 type Props = {
 
@@ -265,12 +268,16 @@ class Prejoin extends Component<Props, State> {
         const { _closeDialog, _onDropdownClose, _onOptionsClick, _setName, _showDialog } = this;
         const { showJoinByPhoneButtons } = this.state;
 
+        // We need the check for interfaceConfig because isButtonEnabled will work only if interfaceConfig is defined.
+        const showConferenceInfo
+            = showJoinActions && (typeof interfaceConfig !== 'undefined' && isButtonEnabled('invite'));
+
         return (
             <PreMeetingScreen
                 footer = { this._renderFooter() }
                 name = { name }
                 showAvatar = { showAvatar }
-                showConferenceInfo = { showJoinActions }
+                showConferenceInfo = { showConferenceInfo }
                 skipPrejoinButton = { this._renderSkipPrejoinButton() }
                 title = { t('prejoin.joinMeeting') }
                 videoMuted = { !showCameraPreview }
